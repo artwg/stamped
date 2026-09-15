@@ -495,7 +495,7 @@ function rebuildSets(){
 
 async function loadState(){
   try{
-    const res = await Promise.resolve({value: localStorage.getItem(STORAGE_KEY)});
+    const res = await window.storage.get(STORAGE_KEY, false);
     if(res && res.value){
       const parsed = JSON.parse(res.value);
       STATE = Object.assign({visited:{world:[],us:[],ca:[],au:[]},dates:{},log:[]}, parsed);
@@ -509,7 +509,7 @@ let saveTimer = null;
 function saveState(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async ()=>{
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }
+    try{ await window.storage.set(STORAGE_KEY, JSON.stringify(STATE), false); }
     catch(e){ console.error("Could not save progress", e); }
   }, 150);
 }
@@ -1298,7 +1298,7 @@ function wireResetControl(){
     S.STATE.dates = {};
     S.STATE.log = [];
     Object.keys(S.sets).forEach(k=>S.sets[k].clear());
-    try{ localStorage.setItem("stamped-app-state-v1", JSON.stringify(S.STATE)); }catch(e){}
+    try{ await window.storage.set("stamped-app-state-v1", JSON.stringify(S.STATE), false); }catch(e){}
     S.refreshAllViews();
   });
 }
